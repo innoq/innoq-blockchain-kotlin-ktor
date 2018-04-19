@@ -12,8 +12,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<kotlin.version>1.2.21</kotlin.version>
+		<kotlin.version>1.2.31</kotlin.version>
 		<ktor.version>0.9.1</ktor.version>
+		<junit.version>4.12</junit.version>
 
 		<main.class>hello.MainKt</main.class>
 	</properties>
@@ -37,8 +38,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib-jre8</artifactId>
+			<artifactId>kotlin-stdlib</artifactId>
 			<version>${kotlin.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-test-junit</artifactId>
+			<version>${kotlin.version}</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -49,11 +57,9 @@
 
 		<dependency>
 			<groupId>io.ktor</groupId>
-			<artifactId>ktor-server-tomcat</artifactId>
+			<artifactId>ktor-server-netty</artifactId>
 			<version>${ktor.version}</version>
 		</dependency>
-
-
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -64,7 +70,8 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -74,49 +81,48 @@
 
 		<plugins>
 			<plugin>
-				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-maven-plugin</artifactId>
 				<version>${kotlin.version}</version>
-				<configuration>
-					<experimentalCoroutines>enable</experimentalCoroutines>
-				</configuration>
 				<executions>
 					<execution>
 						<id>compile</id>
+						<phase>compile</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
-
 					<execution>
 						<id>test-compile</id>
+						<phase>test-compile</phase>
 						<goals>
 							<goal>test-compile</goal>
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
 				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>${main.class}</mainClass>
-						</manifest>
-					</archive>
+					<jvmTarget>1.8</jvmTarget>
+					<args>
+						<arg>-Xcoroutines=enable</arg>
+					</args>
 				</configuration>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-assembly-plugin</artifactId> 
-				<version>2.6</version> <executions> <execution> <id>make-assembly</id> <phase>package</phase> 
-				<goals> <goal>single</goal> </goals> <configuration> <archive> <manifest> 
-				<mainClass>${main.class}</mainClass> </manifest> </archive> <descriptorRefs> 
-				<descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs> </configuration> 
-				</execution> </executions> </plugin> -->
 		</plugins>
+
 	</build>
+
+	<repositories>
+		<repository>
+			<id>ktor</id>
+			<url>http://dl.bintray.com/kotlin/ktor</url>
+		</repository>
+		<repository>
+			<id>kotlinx</id>
+			<url>http://dl.bintray.com/kotlin/kotlinx</url>
+		</repository>
+		<repository>
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com</url>
+		</repository>
+	</repositories>
 </project>
