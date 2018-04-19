@@ -1,9 +1,10 @@
-package hello
+package com.innoq.innochain.model
 
 import java.security.MessageDigest
 import java.time.Instant
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.innoq.innochain.util.ByteArrayToHexAsciiTypeAdapter
+import com.innoq.innochain.util.toHexString
 
 class Block(
 	val index: Int,

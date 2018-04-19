@@ -1,6 +1,6 @@
-package com.innoq.blockchain.kotlin.ktor
+package com.innoq.innochain.model
 
-import hello.Block
+import com.innoq.innochain.model.Block
 import org.junit.Test
 
 class BlockTest {

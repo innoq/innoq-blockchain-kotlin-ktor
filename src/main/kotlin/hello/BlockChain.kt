@@ -1,4 +1,0 @@
-package hello
-
-object BlockChain {
-}

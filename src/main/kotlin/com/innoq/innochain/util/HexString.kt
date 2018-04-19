@@ -1,6 +1,4 @@
-package hello
-
-import com.sun.org.apache.bcel.internal.generic.INEG
+package com.innoq.innochain.util
 
 internal fun String.fromHexString(): ByteArray {
 	val bytes: ByteArray = ByteArray(this.length / 2);

@@ -1,4 +1,4 @@
-package hello
+package com.innoq.innochain.util
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
