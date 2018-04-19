@@ -32,7 +32,7 @@ object BlockChain {
 		return block
 	}
 
-	fun mine() = mine(_blocks.size + 1, calculateDigest(_blocks.last()), emptyList(), Instant.now().epochSecond)
+	fun mine(transactions: List<Transaction>) = mine(_blocks.size + 1, calculateDigest(_blocks.last()), transactions, Instant.now().epochSecond)
 	
 	private fun calculateDigest(block: Block): ByteArray {
 		val md: MessageDigest = MessageDigest.getInstance("SHA-256")
