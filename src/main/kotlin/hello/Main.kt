@@ -1,26 +1,48 @@
 package hello
 
 import io.ktor.application.*
+import io.ktor.features.CallLogging
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
-import io.ktor.server.tomcat.Tomcat
+import io.ktor.server.netty.*
 
 fun main(args: Array<String>) {
-    val server = embeddedServer(Tomcat, port = 8080) {
-        routing {
-            get("/") {
-                call.respondText(
-					"""{
+    embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
+}
+
+
+// Modules
+fun Application.main() {
+    install(DefaultHeaders)
+    install(CallLogging)
+    install(StatusPages){
+        exception<Throwable> { cause ->
+            call.respond(HttpStatusCode.InternalServerError)
+        }
+    }
+
+    routing {
+        root()
+    }
+}
+
+// Routing
+fun Routing.root() {
+    get("/") {
+        call.respondText(
+                """{
                 			"nodeId": "bcfeb8c5-c9a6-4731-9a17-e0fedd7aa073",
                 			"currentBlockHeight": 69
                 	   }""",
-					ContentType.Application.Json)
-            }
-            get("/blocks") {
-                call.respondText(
-					"""{
+                ContentType.Application.Json)
+    }
+    get("/blocks") {
+        call.respondText(
+                """{
                 			"blocks": [
 	                			 {
 	                				"index": 1,
@@ -44,9 +66,9 @@ fun main(args: Array<String>) {
                 			"blockHeight": 2
             			}
                 	""", ContentType.Application.Json)
-            }
-			get("/mine") {
-                call.respondText("""
+    }
+    get("/mine") {
+        call.respondText("""
                 	{
                 		"message": "Mined a new block in 11.214s. Hashing power: 58854 hashes/s.",
                 		"block": {
@@ -58,8 +80,8 @@ fun main(args: Array<String>) {
                 		}
                 	}
                 	""", ContentType.Application.Json)
-            }
-        }
     }
-    server.start(wait = true)
+    get("/health") {
+        call.respondText("OK")
+    }
 }
