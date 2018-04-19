@@ -56,8 +56,7 @@ fun Routing.root() {
                    |}""".trimMargin(), ContentType.Application.Json)
     }
     get("/mine") {
-        val block = Block(index = BlockChain.blocks.size + 1, previousBlockHash = ByteArray(32))
-        BlockChain.blocks.add(block)
+        val block = BlockChain.mine()
         call.respondText(block.toString(), ContentType.Application.Json)
     }
     get("/health") {

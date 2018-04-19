@@ -1,18 +1,10 @@
 package com.innoq.innochain.model
 
-import java.security.MessageDigest
-import java.time.Instant
 import com.google.gson.GsonBuilder
 import com.innoq.innochain.util.ByteArrayToHexAsciiTypeAdapter
-import com.innoq.innochain.util.toHexString
+import java.util.UUID
 
-data class Block(
-	val index: Int,
-	val previousBlockHash: ByteArray,
-	val transaction: Collection<Transaction>,
-	val proof: Long,
-	val timestamp: Long) {
-	
+data class Transaction(val id: UUID, val timestamp: Long, val payload: String) {
 	private fun toJson(): String {
 		val gson = GsonBuilder()
 				.registerTypeHierarchyAdapter(ByteArray::class.java, ByteArrayToHexAsciiTypeAdapter())
@@ -21,5 +13,5 @@ data class Block(
 		return gson.toJson(this);
 	}
 		
-	override fun toString() = toJson()
+	override fun toString(): String = toJson()
 }
