@@ -60,6 +60,12 @@
 			<artifactId>ktor-server-tomcat</artifactId>
 			<version>${ktor.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.ktor</groupId>
+			<artifactId>ktor-gson</artifactId>
+			<version>${ktor.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

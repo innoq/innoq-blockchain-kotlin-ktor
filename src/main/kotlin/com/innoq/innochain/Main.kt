@@ -1,14 +1,18 @@
 package com.innoq.innochain
 
 import com.innoq.innochain.dto.TransactionRequest
+import com.innoq.innochain.dto.TransactionResponse
 import com.innoq.innochain.model.BlockChain
 import com.innoq.innochain.model.Transaction
+import com.innoq.innochain.util.ByteArrayToHexAsciiTypeAdapter
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
+import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -20,9 +24,9 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.tomcat.Tomcat
+import java.text.DateFormat
 import java.time.Instant
 import java.util.UUID
-import com.innoq.innochain.dto.TransactionResponse
 
 fun main(args: Array<String>) {
     embeddedServer(Tomcat, port = 8080, module = Application::main).start(wait = true)
@@ -38,6 +42,13 @@ fun Application.main() {
             call.respond(HttpStatusCode.InternalServerError)
         }
     }
+	install(ContentNegotiation) {
+        gson {
+            setDateFormat(DateFormat.LONG)
+            setPrettyPrinting()
+			registerTypeHierarchyAdapter(ByteArray::class.java, ByteArrayToHexAsciiTypeAdapter())
+        }
+	}
 
     routing {
         root()
