@@ -1,5 +1,7 @@
 package com.innoq.innochain
 
+import com.innoq.innochain.model.Block
+import com.innoq.innochain.model.BlockChain
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -40,52 +42,23 @@ fun Application.main() {
 fun Routing.root() {
     get("/") {
         call.respondText(
-                """{
-                			"nodeId": "bcfeb8c5-c9a6-4731-9a17-e0fedd7aa073",
-                			"currentBlockHeight": 69
-                	   }""",
+                """|{
+                		|  "nodeId": "${BlockChain.id}",
+                		|  "currentBlockHeight": ${BlockChain.blocks.size}
+                   |}""".trimMargin(),
                 ContentType.Application.Json)
     }
     get("/blocks") {
         call.respondText(
-                """{
-                			"blocks": [
-	                			 {
-	                				"index": 1,
-	                				"timestamp": 955977,
-	                				"proof": 0,
-	                				"transactions": [{
-	                					"id": "b3c973e2-db05-4eb5-9668-3e81c7389a6d",
-	                					"timestamp": 0,
-	                					"payload": "I am Heribert Innoq"
-	                				}],
-	                				"previousBlockHash": "0"
-	                			},
-	                			{
-	                				"index": 2,
-	                				"timestamp": 1524086823469,
-	                				"proof": 3288718,
-	                				"transactions": [],
-	                				"previousBlockHash": "0000008793d0a9aa..."
-	                			}
-	                		],
-                			"blockHeight": 2
-            			}
-                	""", ContentType.Application.Json)
+                """|{
+                	    |  "blocks": ${BlockChain.blocks},
+                		|  "blockHeight": ${BlockChain.blocks.size}
+                   |}""".trimMargin(), ContentType.Application.Json)
     }
     get("/mine") {
-        call.respondText("""
-                	{
-                		"message": "Mined a new block in 11.214s. Hashing power: 58854 hashes/s.",
-                		"block": {
-                			"index": 5,
-                			"timestamp": 1524087328713,
-                			"proof": 659987,
-                			"transactions": [],
-                			"previousBlockHash": "000000555398faa74ff..."
-                		}
-                	}
-                	""", ContentType.Application.Json)
+        val block = Block(index = BlockChain.blocks.size + 1, previousBlockHash = ByteArray(32))
+        BlockChain.blocks.add(block)
+        call.respondText(block.toString(), ContentType.Application.Json)
     }
     get("/health") {
         call.respondText("OK")
