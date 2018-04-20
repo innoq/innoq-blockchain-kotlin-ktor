@@ -1,5 +1,7 @@
 package com.innoq.innochain
 
+import com.innoq.innochain.dto.RegisterNodeRequest
+import com.innoq.innochain.dto.RegisterNodeResponse
 import com.innoq.innochain.dto.TransactionRequest
 import com.innoq.innochain.dto.TransactionResponse
 import com.innoq.innochain.model.BlockChain
@@ -24,15 +26,17 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.*
 import io.ktor.request.*
+import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.tomcat.Tomcat
-import io.ktor.util.DataConversionException
 import java.text.DateFormat
 import java.time.Instant
 import java.util.UUID
 
 fun main(args: Array<String>) {
-	embeddedServer(Tomcat, port = 8080, module = Application::main).start(wait = true)
+    val port = (args.getOrNull(0) ?: "8080").toInt()
+    BlockChain.port = port
+    val server = embeddedServer(Tomcat, port = port, module = Application::main).start(wait = true)
 }
 
 
@@ -62,12 +66,12 @@ fun Application.main() {
 // Routing
 fun Routing.root() {
 	accept(ContentType.Application.Json) {
-	
 		get("/") {
 			call.respondText(
 					"""|{
-                		|  "nodeId": "${BlockChain.id}",
-                		|  "currentBlockHeight": ${BlockChain.blocks.size}
+                		|  "node": "${BlockChain.id}",
+                		|  "currentBlockHeight": ${BlockChain.blocks.size},
+                		|  "neighbours": ${BlockChain.neighbours}
                    |}""".trimMargin(),
 					ContentType.Application.Json)
 		}
@@ -106,6 +110,18 @@ fun Routing.transactions() {
                     call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
                 }
 
+            }
+        }
+    }
+}
+
+fun Routing.nodes() {
+    accept(ContentType.Application.Json) {
+        route("/nodes") {
+            post("/register") {
+                var nr = call.receive<RegisterNodeRequest>()
+				val node = BlockChain.registerNode(nr.host)
+                call.respond(RegisterNodeResponse("New node added", node))
             }
         }
     }

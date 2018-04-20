@@ -1,6 +1,10 @@
 package com.innoq.innochain.model
 
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.core.*
+import com.google.gson.Gson
 import com.innoq.innochain.util.toHexString
+import java.io.Reader
 import java.security.MessageDigest
 import java.time.Instant
 import java.util.UUID
@@ -8,7 +12,9 @@ import java.util.UUID
 object BlockChain {
 
     val id: UUID = UUID.randomUUID()
-
+	var port : Int = 0
+	private var _neighbours: MutableList<Node> = ArrayList()
+	val neighbours: List<Node> get() = _neighbours
     private var _blocks: MutableList<Block> = ArrayList()
 	val blocks: List<Block> get() = _blocks
 	
@@ -41,5 +47,20 @@ object BlockChain {
 	
 	private fun matchesRequiredPattern(value: ByteArray): Boolean {
 		return value.toHexString().startsWith("0000")
+	}
+
+	fun nodeInfo() : Node {
+		return Node(id, "http://localhost:${port}")
+	}
+
+	fun registerNode(host: String) : Node {
+//		val node = host.httpGet().re
+//		val node = host.httpGet().responseObject(object : ResponseDeserializable () {
+//			override fun deserialize(reader: Reader) = Gson().fromJson(reader, Node::class.java)
+//		})
+//			// _neighbours.add(Node())
+//			return Node(UUID.randomUUID(), "")
+//		}
+		return Node(UUID.randomUUID(), "")
 	}
 }
