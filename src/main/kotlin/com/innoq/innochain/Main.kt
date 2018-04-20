@@ -61,7 +61,7 @@ fun Application.main() {
 // Routing
 fun Routing.root() {
 	accept(ContentType.Application.Json) {
-	
+
 		get("/") {
 			call.respondText(
 					"""|{
@@ -78,21 +78,26 @@ fun Routing.root() {
                    |}""".trimMargin(), ContentType.Application.Json)
 		}
 		get("/mine") {
-			val block = BlockChain.mine(emptyList())
-			call.respondText(block.toString(), ContentType.Application.Json)
+			BlockChain.mine()
+			call.respond(HttpStatusCode.NoContent)
 		}
 		route("/transactions") {
 			post() {
 				var tr = call.receive<TransactionRequest>()
 				val transaction = Transaction(UUID.randomUUID(), Instant.now().epochSecond, tr.payload)
-				BlockChain.mine(listOf(transaction))
-				call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
+				BlockChain.transactions.offer(transaction)
+				call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, false))
 			}
 			get("/{id}") {
 				val transactionId = call.parameters["id"]!!.toUUID()
-				val transaction = BlockChain.blocks.flatMap { it.transaction }.find { it.id == transactionId }
+				var transaction = BlockChain.blocks.flatMap { it.transaction }.find { it.id == transactionId }
 				if (transaction == null) {
-					call.respondText("""{"error": "No such transaction"}""", ContentType.Application.Json, HttpStatusCode.NotFound)
+					transaction = BlockChain.transactions.find { it.id == transactionId }
+					if (transaction == null) {
+						call.respondText("""{"error": "No such transaction"}""", ContentType.Application.Json, HttpStatusCode.NotFound)
+					} else {
+						call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, false))
+					}
 				} else {
 					call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
 				}
