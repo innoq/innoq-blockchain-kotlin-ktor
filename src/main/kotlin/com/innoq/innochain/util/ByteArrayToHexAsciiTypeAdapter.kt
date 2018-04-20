@@ -10,10 +10,10 @@ import java.lang.reflect.Type
 
 class ByteArrayToHexAsciiTypeAdapter : JsonSerializer<ByteArray>, JsonDeserializer<ByteArray> {
 	override fun deserialize (json: JsonElement , typeOfT : Type , context: JsonDeserializationContext ) : ByteArray {
-		return fromHexString(json.getAsString())
+		return json.getAsString().fromHexString()
 	}
 
 	override fun serialize(src: ByteArray, typeOfSrc: Type , context: JsonSerializationContext ): JsonElement {
-		return JsonPrimitive(toHexString(src))
+		return JsonPrimitive(src.toHexString())
 	}
 }

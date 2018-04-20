@@ -18,7 +18,7 @@ object BlockChain {
 			0)
 	}
 	
-	fun mine(index: Int, previousBlockHash: ByteArray, transactions: List<Transaction>, timestamp: Long): Block {
+	private fun mine(index: Int, previousBlockHash: ByteArray, transactions: List<Transaction>, timestamp: Long): Block {
 		var proof: Long = -1
 		
 		var block: Block 
@@ -40,6 +40,6 @@ object BlockChain {
 	}
 	
 	private fun matchesRequiredPattern(value: ByteArray): Boolean {
-		return toHexString(value).startsWith("0000")
+		return value.toHexString().startsWith("0000")
 	}
 }

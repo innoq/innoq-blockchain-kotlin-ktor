@@ -1,16 +1,16 @@
 package com.innoq.innochain.util
 
-fun fromHexString(value: String): ByteArray {
-	val bytes: ByteArray = ByteArray(value.length / 2);
+fun String.fromHexString(): ByteArray {
+	val bytes: ByteArray = ByteArray(length / 2);
 	for ((i, _) in bytes.withIndex()) {
-		bytes.set(i, Integer.parseInt(value.substring(2 * i, 2 * i + 2), 16).toByte());
+		bytes.set(i, Integer.parseInt(substring(2 * i, 2 * i + 2), 16).toByte());
 	}
 	return bytes;
 }
 
-fun toHexString(value: ByteArray): String {
+fun ByteArray.toHexString(): String {
 	val hs = StringBuilder()
-	for (b in value) {
+	for (b in this) {
 		hs.append(String.format("%02X", b));
 	}
 	return hs.toString();
