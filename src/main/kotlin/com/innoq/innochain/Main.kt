@@ -55,6 +55,7 @@ fun Application.main() {
 
 	routing {
 		root()
+        transactions()
 	}
 }
 
@@ -81,28 +82,35 @@ fun Routing.root() {
 			val block = BlockChain.mine(emptyList())
 			call.respondText(block.toString(), ContentType.Application.Json)
 		}
-		route("/transactions") {
-			post() {
-				var tr = call.receive<TransactionRequest>()
-				val transaction = Transaction(UUID.randomUUID(), Instant.now().epochSecond, tr.payload)
-				BlockChain.mine(listOf(transaction))
-				call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
-			}
-			get("/{id}") {
-				val transactionId = call.parameters["id"]!!.toUUID()
-				val transaction = BlockChain.blocks.flatMap { it.transaction }.find { it.id == transactionId }
-				if (transaction == null) {
-					call.respondText("""{"error": "No such transaction"}""", ContentType.Application.Json, HttpStatusCode.NotFound)
-				} else {
-					call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
-				}
-			}
-		}
 		get("/health") {
 			call.respondText("OK")
 		}
 	}
 }
+
+fun Routing.transactions() {
+    accept(ContentType.Application.Json) {
+        route("/transactions") {
+            post() {
+                var tr = call.receive<TransactionRequest>()
+                val transaction = Transaction(UUID.randomUUID(), Instant.now().epochSecond, tr.payload)
+                BlockChain.mine(listOf(transaction))
+                call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
+            }
+            get("/{id}") {
+                val transactionId = call.parameters["id"]!!.toUUID()
+                val transaction = BlockChain.blocks.flatMap { it.transaction }.find { it.id == transactionId }
+                if (transaction == null) {
+                    call.respondText("""{"error": "No such transaction"}""", ContentType.Application.Json, HttpStatusCode.NotFound)
+                } else {
+                    call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
+                }
+
+            }
+        }
+    }
+}
+
 
 fun String.toUUID(): UUID {
 	return UUID.fromString(this)
