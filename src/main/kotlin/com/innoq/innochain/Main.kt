@@ -10,25 +10,25 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
-import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
+import io.ktor.routing.accept
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import io.ktor.routing.*
-import io.ktor.request.*
+import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.tomcat.Tomcat
-import io.ktor.util.DataConversionException
 import java.text.DateFormat
 import java.time.Instant
+import java.util.Deque
 import java.util.UUID
 
 fun main(args: Array<String>) {
@@ -110,6 +110,15 @@ fun Routing.transactions() {
 				} else {
 					call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
 				}
+			}
+			get("/") {
+				var confirmedTransactions: Collection<Transaction> = BlockChain.blocks.flatMap { it.transaction }
+				var notConfirmedTransactions: Collection<Transaction> = BlockChain.transactions
+				
+				var allTransactions: MutableList<TransactionResponse> = ArrayList()
+				confirmedTransactions.forEach { allTransactions.add(TransactionResponse(it.id, it.timestamp, it.payload, true)) }
+				notConfirmedTransactions.forEach { allTransactions.add(TransactionResponse(it.id, it.timestamp, it.payload, false)) }
+				call.respond(allTransactions)
 			}
         }
     }

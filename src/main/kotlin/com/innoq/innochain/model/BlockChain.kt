@@ -40,7 +40,7 @@ object BlockChain {
 
 	fun mine(): Unit {
 		val list: MutableList<Transaction> = ArrayList()
-		if(!transactions.isEmpty() && list.size < 5) {
+		while(!transactions.isEmpty() && list.size < 5) {
 			list.add(transactions.poll())
 		}
 		
