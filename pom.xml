@@ -16,7 +16,7 @@
 		<ktor.version>0.9.1</ktor.version>
 		<junit.version>4.12</junit.version>
 
-		<main.class>hello.MainKt</main.class>
+		<main.class>com.innoq.innochain.MainKt</main.class>
 	</properties>
 
 	<repositories>

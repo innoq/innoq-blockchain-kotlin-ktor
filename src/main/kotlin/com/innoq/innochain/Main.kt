@@ -20,20 +20,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
-import io.ktor.routing.Routing
-import io.ktor.routing.accept
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
 import io.ktor.routing.*
-import io.ktor.request.*
-import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.tomcat.Tomcat
 import java.text.DateFormat
 import java.time.Instant
-import kotlinx.coroutines.experimental.*
 import java.util.UUID
+import kotlin.collections.ArrayList
 
 fun main(args: Array<String>) {
     val port = (args.getOrNull(0) ?: "8080").toInt()
@@ -62,6 +55,7 @@ fun Application.main() {
 	routing {
 		root()
 		transactions()
+		nodes()
 	}
 }
 
