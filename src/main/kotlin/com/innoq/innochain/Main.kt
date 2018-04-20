@@ -55,6 +55,7 @@ fun Application.main() {
 
 	routing {
 		root()
+        transactions()
 	}
 }
 
@@ -81,8 +82,16 @@ fun Routing.root() {
 			BlockChain.mine()
 			call.respond(HttpStatusCode.NoContent)
 		}
-		route("/transactions") {
-			post() {
+		get("/health") {
+			call.respondText("OK")
+		}
+	}
+}
+
+fun Routing.transactions() {
+    accept(ContentType.Application.Json) {
+        route("/transactions") {
+            post() {
 				var tr = call.receive<TransactionRequest>()
 				val transaction = Transaction(UUID.randomUUID(), Instant.now().epochSecond, tr.payload)
 				BlockChain.transactions.offer(transaction)
@@ -102,12 +111,10 @@ fun Routing.root() {
 					call.respond(TransactionResponse(transaction.id, transaction.timestamp, transaction.payload, true))
 				}
 			}
-		}
-		get("/health") {
-			call.respondText("OK")
-		}
-	}
+        }
+    }
 }
+
 
 fun String.toUUID(): UUID {
 	return UUID.fromString(this)
