@@ -26,9 +26,10 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.tomcat.Tomcat
+import kotlinx.coroutines.experimental.CommonPool
 import java.text.DateFormat
 import java.time.Instant
-import java.util.Deque
+import kotlinx.coroutines.experimental.*
 import java.util.UUID
 
 fun main(args: Array<String>) {
@@ -55,7 +56,7 @@ fun Application.main() {
 
 	routing {
 		root()
-        transactions()
+		transactions()
 	}
 }
 
@@ -89,9 +90,9 @@ fun Routing.root() {
 }
 
 fun Routing.transactions() {
-    accept(ContentType.Application.Json) {
-        route("/transactions") {
-            post() {
+	accept(ContentType.Application.Json) {
+		route("/transactions") {
+			post() {
 				var tr = call.receive<TransactionRequest>()
 				val transaction = Transaction(UUID.randomUUID(), Instant.now().epochSecond, tr.payload)
 				BlockChain.transactions.offer(transaction)
@@ -114,14 +115,14 @@ fun Routing.transactions() {
 			get("/") {
 				var confirmedTransactions: Collection<Transaction> = BlockChain.blocks.flatMap { it.transaction }
 				var notConfirmedTransactions: Collection<Transaction> = BlockChain.transactions
-				
+
 				var allTransactions: MutableList<TransactionResponse> = ArrayList()
 				confirmedTransactions.forEach { allTransactions.add(TransactionResponse(it.id, it.timestamp, it.payload, true)) }
 				notConfirmedTransactions.forEach { allTransactions.add(TransactionResponse(it.id, it.timestamp, it.payload, false)) }
 				call.respond(allTransactions)
 			}
-        }
-    }
+		}
+	}
 }
 
 
